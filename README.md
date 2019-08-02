@@ -454,15 +454,15 @@ This will also create the corresponding Docker image and the Kubernetes artifact
    $ ballerina build stock_quote_summary_service
   
    Run following command to deploy kubernetes artifacts:  
-   kubectl apply -f ./target/stock_quote_summary_service/kubernetes
+   kubectl apply -f ./target/kubernetes/stock_quote_summary_service
 ```
 
 - You can verify that the Docker image that we specified in `@kubernetes:Deployment` is created, by using `$ docker images`.
-- Also the Kubernetes artifacts related our service, will be generated in `./target/stock_quote_summary_service/kubernetes`. 
+- Also the Kubernetes artifacts related our service, will be generated in `./target/kubernetes/stock_quote_summary_service`. 
 - Now you can create the Kubernetes deployment using:
 
 ```
-   $ kubectl apply -f ./target/stock_quote_summary_service/kubernetes 
+   $ kubectl apply -f ./target/kubernetes/stock_quote_summary_service
  
    deployment.extensions "ballerina-guides-asynchronous-invocation" created
    ingress.extensions "ballerina-guides-asynchronous-invocation" created
@@ -518,7 +518,7 @@ enabled=true
 To start the ballerina service using the configuration file, run the following command
 
 ```
-   $ ballerina run --config stock_quote_summary_service/ballerina.conf stock_quote_summary_service/
+   $ ballerina run --config ballerina.conf stock_quote_summary_service
 ```
 NOTE: The above configuration is the minimum configuration needed to enable tracing and metrics. With these configurations default values are load as the other configuration parameters of metrics and tracing.
 
@@ -621,8 +621,6 @@ Ballerina has a log module for logging to the console. You can import ballerina/
    $ nohup ballerina run stock_quote_summary_service/ &>> ballerina.log&
 ```
    NOTE: This will write the console log to the `ballerina.log` file in the `asynchronous-invocation/guide` directory
-
-- Start Elasticsearch using the following command
 
 - Start Elasticsearch using the following command
 ```
