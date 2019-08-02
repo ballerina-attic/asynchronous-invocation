@@ -1,7 +1,7 @@
 import ballerina/test;
 import ballerina/http;
 
-@test:Config
+@test:Config{}
 function testGoogResource() {
     // Invoking the main function
     http:Client httpEndpoint = new("http://localhost:9095/nasdaq/quote");
@@ -22,7 +22,7 @@ function testGoogResource() {
     }
 }
 
-@test:Config
+@test:Config{}
 function testApplResource() {
     // Invoking the main function
     http:Client httpEndpoint = new("http://localhost:9095/nasdaq/quote");
@@ -43,7 +43,7 @@ function testApplResource() {
     }
 }
 
-@test:Config
+@test:Config{}
 function testMsftResource() {
     // Invoking the main function
     http:Client httpEndpoint = new("http://localhost:9095/nasdaq/quote");

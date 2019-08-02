@@ -59,30 +59,40 @@ The following figure illustrates the scenario of the Stock Quote Summary service
 
 
 ### Create the project structure
-
-Ballerina is a complete programming language that can have any custom project structure that you require. For this example, let's use the following module structure.
+To initialize Ballerina project use `ballerina new <project-name>` command.
+For our current project we can use the following command:
+```
+ballerina new asynchronous-invocation
+```
+And then navigate into `asynchronous-invocation` directory and to create Ballerina modules command `ballerina create <module-name>` is used.
+```
+ballerina create stock_quote_data_backend
+ballerina create stock_quote_summary_service
+```
+Your file structure will be similar to:
 
 ```
-asynchronous-invocation
-    └── guide
-        ├── stock_quote_data_backend
-        │   ├── stock_backend.bal
-        │   └── tests
-        │       └── stock_backend_test.bal
-        ├── stock_quote_summary_service
-        │   ├── async_service.bal
-        │   └── tests
-        │       └── async_service_test.bal
-        └── tests
-            └── integration_test.bal
+├── Ballerina.toml
+├── src
+│   ├── stock_quote_data_backend
+│   │   ├── Module.md
+│   │   ├── main.bal
+│   │   ├── resources
+│   │   └── tests
+│   │       ├── main_test.bal
+│   │       └── resources
+│   └── stock_quote_summary_service
+│       ├── Module.md
+│       ├── main.bal
+│       ├── resources
+│       └── tests
+│           ├── main_test.bal
+│           └── resources
+└── tests
+    └── resources
 ```
 
-- Create the above directories in your local machine and also create empty `.bal` files.
-
-- Then open the terminal and navigate to `asynchronous-invocation/guide` and run Ballerina project initializing toolkit.
-```bash
-   $ ballerina init
-```
+To learn more about how to structure Ballerina code in a proejct please refer [How to Structure Ballerina Code](https://ballerina.io/learn/how-to-structure-ballerina-code/).
 
 ### Implement the Stock Quote Summary service with asynchronous invocations
 
@@ -105,6 +115,7 @@ The following statement receives the response from the future type.
 import ballerina/http;
 import ballerina/log;
 import ballerina/runtime;
+import ballerina/io;
 
 # Attributes associated with the service endpoint is defined here.
 listener http:Listener asyncServiceEP = new(9090);
@@ -227,7 +238,7 @@ You can use any third-party remote service for the remote backend service. For e
  - resource path `/APPL` with response `"APPL, Apple Inc., 165.22"` 
  - resource path `/MSFT` with response `"MSFT, Microsoft Corporation, 95.35"` 
 
-NOTE: You can find the complete implementation of the stock_quote_data_backend [here](stock_quote_data_backend/stock_backend.bal)
+NOTE: You can find the complete implementation of the stock_quote_data_backend [here]([stock_quote_data_backend/stock_backend.bal](https://github.com/ballerina-guides/asynchronous-invocation/tree/master/guide))
 
 
 ## Testing 
