@@ -294,9 +294,9 @@ Output :
 
 
 In Ballerina, the unit test cases should be in the same module inside a folder named as 'tests'.  When writing the test functions the below convention should be followed.
-- Test functions should be annotated with `@test:Config`. See the below example.
+- Test functions should be annotated with `@test:Config{}`. See the below example.
 ```ballerina
-   @test:Config
+   @test:Config{}
    function testQuoteService() {
 ```
   
