@@ -122,5 +122,9 @@ service AsyncInvoker on asyncServiceEP {
 }
 
 function remoteMethod(http:Client serviceEP, string path) returns future<http:Response|error> {
-    return start serviceEP->get(path);
+    return start invoke(serviceEP, path);
+}
+
+function invoke(http:Client serviceEP, string path) returns http:Response|error {
+    return serviceEP->get(path);
 }
