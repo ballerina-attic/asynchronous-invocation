@@ -324,27 +324,25 @@ $ ballerina build stock_quote_summary_service
 $ ballerina build stock_quote_data_backend
 ```
 
-- Once the `stock_quote_summary_service.balx` and `build stock_quote_data_backend.balx` are created inside the target directory, issue the following command to execute them. 
+- Once the `stock_quote_summary_service.jar` and `build stock_quote_data_backend.jar` are created inside the `target/tmp` directory, issue the following command to execute them. 
 
 ```
-$ ballerina run target/stock_quote_summary_service.balx
+$ ballerina run target/tmp/stock_quote_summary_service.jar
 ```
 
 ```
-$ ballerina run target/stock_quote_data_backend.balx
+$ ballerina run target/tmp/stock_quote_data_backend.jar
 ```
 
 - Once the service is successfully executed, the following output is displayed. 
 ```
-$ ballerina run target/stock_quote_summary_service.balx
-Initiating service(s) in 'target/stock_quote_summary_service.balx'
-[ballerina/http] started HTTP/WS endpoint 0.0.0.0:9090
+$ ballerina run target/tmp/stock_quote_summary_service.jar
+[ballerina/http] started HTTP/WS listener 0.0.0.0:9090
 ```
 
 ```
-$ ballerina run target/stock_quote_data_backend.balx
-Initiating service(s) in 'target/stock_quote_data_backend.balx'
-[ballerina/http] started HTTP/WS endpoint 0.0.0.0:9095
+$ ballerina run target/tmp/stock_quote_data_backend.jar
+[ballerina/http] started HTTP/WS listener 0.0.0.0:9095
 
 ```
 
@@ -379,8 +377,8 @@ service AsyncInvoker on asyncServiceEP {
 
 - `@docker:Config` annotation is used to provide the basic Docker image configurations for the sample. `@docker:Expose {}` is used to expose the port.
 
-- Now you can build a Ballerina executable archive (.balx) of the service that we developed above, using the following command. It points to the service file that we developed above and it will create an executable binary out of that. 
-This will also create the corresponding Docker image using the Docker annotations that you have configured above. Navigate to `asynchronous-invocation/guide` and run the following command.
+- Now you can build a Ballerina executable of the service that we developed above, using the following command. It points to the service file that we developed above and it will create an executable binary out of that. 
+This will also create the corresponding Docker image using the Docker annotations that you have configured above. Navigate to `asynchronous-invocation/guide/asynchronous-invocation` and run the following command.
 ```
    $ ballerina build stock_quote_summary_service
 ```

@@ -63,7 +63,6 @@ service AsyncInvoker on asyncServiceEP {
                 log:printError("Failed to retrive the payload");
             }
             // Add the response from /GOOG endpoint to responseJson file
-            //responseJson["GOOG"] = responseStr;
             json goog = { GOOG: responseStr};
             responseJson = checkpanic responseJson.mergeJson(goog);
         } else {
