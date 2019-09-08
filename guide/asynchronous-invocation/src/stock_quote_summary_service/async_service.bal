@@ -1,9 +1,6 @@
 import ballerina/http;
 import ballerina/log;
-import ballerina/runtime;
-import ballerina/io;
 
-# Attributes associated with the service endpoint is defined here.
 listener http:Listener asyncServiceEP = new(9090);
 
 # Service is to be exposed via HTTP/1.1.
@@ -32,19 +29,19 @@ service AsyncInvoker on asyncServiceEP {
         // remote invocation returns without waiting for response.
 
         // Calling the backend to get the stock quote for GOOG asynchronously
-        future<http:Response|error> f1 = remoteMethod(nasdaqServiceEP, "/nasdaq/quote/GOOG");
+        future<http:Response|error> f1 = start nasdaqServiceEP->get("/nasdaq/quote/GOOG");
 
         log:printInfo(" >> Invocation completed for GOOG stock quote! Proceed without
         blocking for a response.");
 
         // Calling the backend to get the stock quote for APPL asynchronously
-        future<http:Response|error> f2 = remoteMethod(nasdaqServiceEP, "/nasdaq/quote/APPL");
+        future<http:Response|error> f2 = start nasdaqServiceEP->get("/nasdaq/quote/APPL");
 
         log:printInfo(" >> Invocation completed for APPL stock quote! Proceed without
         blocking for a response.");
 
         // Calling the backend to get the stock quote for MSFT asynchronously
-        future<http:Response|error> f3 = remoteMethod(nasdaqServiceEP, "/nasdaq/quote/MSFT");
+        future<http:Response|error> f3 = start nasdaqServiceEP->get("/nasdaq/quote/MSFT");
 
         log:printInfo(" >> Invocation completed for MSFT stock quote! Proceed without
         blocking for a response.");
@@ -118,10 +115,6 @@ service AsyncInvoker on asyncServiceEP {
             log:printError("Error sending response", err = result);
         }
     }
-}
-
-function remoteMethod(http:Client serviceEP, string path) returns future<http:Response|error> {
-    return start invoke(serviceEP, path);
 }
 
 function invoke(http:Client serviceEP, string path) returns http:Response|error {

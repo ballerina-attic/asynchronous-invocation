@@ -1,5 +1,4 @@
 import ballerina/http;
-import ballerina/runtime;
 import ballerina/log;
 
 # Attributes associated with the service endpoint are defined here.
