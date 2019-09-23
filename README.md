@@ -59,17 +59,17 @@ The following figure illustrates the scenario of the Stock Quote Summary service
 
 
 ### Create the project structure
-To initialize Ballerina project use `ballerina new <project-name>` command.
-For our current project we can use the following command:
+To initialize a Ballerina project, use the `ballerina new <project-name>` command.
+For our current project, use the following command:
 ```
 ballerina new asynchronous-invocation
 ```
-And then navigate into `asynchronous-invocation` directory and to create Ballerina modules command `ballerina create <module-name>` is used.
+Navigate to the `asynchronous-invocation` directory, and execute the `ballerina create <module-name>`command to create the required Ballerina modules.
 ```
 ballerina create stock_quote_data_backend
 ballerina create stock_quote_summary_service
 ```
-Your file structure will be similar to:
+Your file structure will be similar to the following:
 
 ```
 ├── Ballerina.toml
@@ -92,7 +92,7 @@ Your file structure will be similar to:
     └── resources
 ```
 
-To learn more about how to structure Ballerina code in a proejct please refer [How to Structure Ballerina Code](https://ballerina.io/learn/how-to-structure-ballerina-code/).
+To learn more about how to structure Ballerina code in a project, see [How to Structure Ballerina Code](https://ballerina.io/learn/how-to-structure-ballerina-code/).
 
 ### Implement the Stock Quote Summary service with asynchronous invocations
 
@@ -521,7 +521,7 @@ To start the ballerina service using the configuration file, run the following c
 ```
    $ ballerina run --config stock_quote_summary_service/ballerina.conf stock_quote_summary_service
 ```
-NOTE: The above configuration is the minimum configuration needed to enable tracing and metrics. With these configurations default values are load as the other configuration parameters of metrics and tracing.
+NOTE: The above configuration is the minimum configuration needed to enable tracing and metrics. With these configurations, default values are load as the other configuration parameters of metrics and tracing.
 
 ### Tracing 
 
