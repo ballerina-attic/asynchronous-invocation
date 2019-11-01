@@ -31,20 +31,20 @@ service AsyncInvoker on asyncServiceEP {
         // Calling the backend to get the stock quote for GOOG asynchronously
         future<http:Response|error> f1 = start nasdaqServiceEP->get("/nasdaq/quote/GOOG");
 
-        log:printInfo(" >> Invocation completed for GOOG stock quote! Proceed without
-        blocking for a response.");
+        log:printInfo(" >> Invocation completed for GOOG stock quote! Proceed without " + 
+        "blocking for a response.");
 
         // Calling the backend to get the stock quote for APPL asynchronously
         future<http:Response|error> f2 = start nasdaqServiceEP->get("/nasdaq/quote/APPL");
 
-        log:printInfo(" >> Invocation completed for APPL stock quote! Proceed without
-        blocking for a response.");
+        log:printInfo(" >> Invocation completed for APPL stock quote! Proceed without " +
+        "blocking for a response.");
 
         // Calling the backend to get the stock quote for MSFT asynchronously
         future<http:Response|error> f3 = start nasdaqServiceEP->get("/nasdaq/quote/MSFT");
 
-        log:printInfo(" >> Invocation completed for MSFT stock quote! Proceed without
-        blocking for a response.");
+        log:printInfo(" >> Invocation completed for MSFT stock quote! Proceed without " +
+        "blocking for a response.");
 
         // Initialize empty json to add results from backed call
         json responseJson = ();
@@ -115,8 +115,4 @@ service AsyncInvoker on asyncServiceEP {
             log:printError("Error sending response", err = result);
         }
     }
-}
-
-function invoke(http:Client serviceEP, string path) returns http:Response|error {
-    return serviceEP->get(path);
 }
