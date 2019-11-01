@@ -239,7 +239,7 @@ You can use any third-party remote service for the remote backend service. For e
  - resource path `/APPL` with response `"APPL, Apple Inc., 165.22"` 
  - resource path `/MSFT` with response `"MSFT, Microsoft Corporation, 95.35"` 
 
-NOTE: You can find the complete implementation of the stock_quote_data_backend [here]([stock_quote_data_backend/stock_backend.bal](https://github.com/ballerina-guides/asynchronous-invocation/tree/master/guide))
+NOTE: For the complete implementation of the `stock_quote_data_backend`, see  [stock_quote_data_backend/stock_backend.bal](https://github.com/ballerina-guides/asynchronous-invocation/tree/master/guide)
 
 
 ## Testing 
