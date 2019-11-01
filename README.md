@@ -379,7 +379,7 @@ service AsyncInvoker on asyncServiceEP {
 - `@docker:Config` annotation is used to provide the basic Docker image configurations for the sample. `@docker:Expose {}` is used to expose the port.
 
 - Now, you can build a Ballerina executable of the service that we developed above using the following command. It points to the service file that we developed above and it will create an executable binary out of that. 
-This will also create the corresponding Docker image using the Docker annotations that you have configured above. Navigate to `asynchronous-invocation/guide/asynchronous-invocation` and run the following command.
+This will also create the corresponding Docker image using the Docker annotations that you have configured above. Navigate to the `asynchronous-invocation/guide/asynchronous-invocation` directory and run the following command.
 ```
    $ ballerina build stock_quote_summary_service
 ```
