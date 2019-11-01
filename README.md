@@ -59,30 +59,40 @@ The following figure illustrates the scenario of the Stock Quote Summary service
 
 
 ### Create the project structure
-
-Ballerina is a complete programming language that can have any custom project structure that you require. For this example, let's use the following module structure.
+To initialize a Ballerina project, use the `ballerina new <project-name>` command.
+For our current project, use the following command:
+```
+ballerina new asynchronous-invocation
+```
+Navigate to the `asynchronous-invocation` directory, and execute the `ballerina create <module-name>`command to create the required Ballerina modules.
+```
+ballerina create stock_quote_data_backend
+ballerina create stock_quote_summary_service
+```
+Your file structure will be similar to the following:
 
 ```
-asynchronous-invocation
-    └── guide
-        ├── stock_quote_data_backend
-        │   ├── stock_backend.bal
-        │   └── tests
-        │       └── stock_backend_test.bal
-        ├── stock_quote_summary_service
-        │   ├── async_service.bal
-        │   └── tests
-        │       └── async_service_test.bal
-        └── tests
-            └── integration_test.bal
+├── Ballerina.toml
+├── src
+│   ├── stock_quote_data_backend
+│   │   ├── Module.md
+│   │   ├── main.bal
+│   │   ├── resources
+│   │   └── tests
+│   │       ├── main_test.bal
+│   │       └── resources
+│   └── stock_quote_summary_service
+│       ├── Module.md
+│       ├── main.bal
+│       ├── resources
+│       └── tests
+│           ├── main_test.bal
+│           └── resources
+└── tests
+    └── resources
 ```
 
-- Create the above directories in your local machine and also create empty `.bal` files.
-
-- Then open the terminal and navigate to `asynchronous-invocation/guide` and run Ballerina project initializing toolkit.
-```bash
-   $ ballerina init
-```
+To learn more about how to structure Ballerina code in a project, see [How to Structure Ballerina Code](https://ballerina.io/learn/how-to-structure-ballerina-code/).
 
 ### Implement the Stock Quote Summary service with asynchronous invocations
 
@@ -104,9 +114,7 @@ The following statement receives the response from the future type.
 ```ballerina
 import ballerina/http;
 import ballerina/log;
-import ballerina/runtime;
 
-# Attributes associated with the service endpoint is defined here.
 listener http:Listener asyncServiceEP = new(9090);
 
 # Service is to be exposed via HTTP/1.1.
@@ -141,15 +149,13 @@ service AsyncInvoker on asyncServiceEP {
         blocking for a response.");
 
         // Calling the backend to get the stock quote for APPL asynchronously
-        future<http:Response|error> f2 = start nasdaqServiceEP
-        -> get("/nasdaq/quote/APPL");
+        future<http:Response|error> f2 = start nasdaqServiceEP->get("/nasdaq/quote/APPL");
 
         log:printInfo(" >> Invocation completed for APPL stock quote! Proceed without
         blocking for a response.");
 
         // Calling the backend to get the stock quote for MSFT asynchronously
-        future<http:Response|error> f3 = start nasdaqServiceEP
-        -> get("/nasdaq/quote/MSFT");
+        future<http:Response|error> f3 = start nasdaqServiceEP->get("/nasdaq/quote/MSFT");
 
         log:printInfo(" >> Invocation completed for MSFT stock quote! Proceed without
         blocking for a response.");
@@ -168,11 +174,13 @@ service AsyncInvoker on asyncServiceEP {
                 log:printError("Failed to retrive the payload");
             }
             // Add the response from /GOOG endpoint to responseJson file
-            responseJson["GOOG"] = responseStr;
+            json goog = { GOOG: responseStr};
+            responseJson = checkpanic responseJson.mergeJson(goog);
         } else {
-            string errorMsg = <string>response1.detail().message;
+            string errorMsg = <string>response1.detail()["message"];
             log:printError(errorMsg);
-            responseJson["GOOG"] = errorMsg;
+            json goog = { GOOG: errorMsg};
+            responseJson = checkpanic responseJson.mergeJson(goog);
         }
 
         var response2 = wait f2;
@@ -184,11 +192,13 @@ service AsyncInvoker on asyncServiceEP {
                 log:printError("Failed to retrive the payload");
             }
             // Add the response from /APPL endpoint to responseJson file
-            responseJson["APPL"] = responseStr;
+            json appl = { APPL: responseStr};
+            responseJson = checkpanic responseJson.mergeJson(appl);
         } else {
-            string errorMsg = <string>response2.detail().message;
+            string errorMsg = <string>response2.detail()["message"];
             log:printError(errorMsg);
-            responseJson["APPL"] = errorMsg;
+            json appl = { APPL: errorMsg};
+            responseJson = checkpanic responseJson.mergeJson(appl);
         }
 
         var response3 = wait f3;
@@ -200,16 +210,19 @@ service AsyncInvoker on asyncServiceEP {
                 log:printError("Failed to retrive the payload");
             }
             // Add the response from /MSFT endpoint to responseJson file
-            responseJson["MSFT"] = responseStr;
+            json msft = { MSFT: responseStr};
+            responseJson = checkpanic responseJson.mergeJson(msft);
+            
 
         } else {
-            string errorMsg = <string>response3.detail().message;
+            string errorMsg = <string>response3.detail()["message"];
             log:printError(errorMsg);
-            responseJson["MSFT"] = errorMsg;
+            json msft = { MSFT: errorMsg};
+            responseJson = checkpanic responseJson.mergeJson(msft);
         }
 
         // Send the response back to the client
-        finalResponse.setJsonPayload(untaint responseJson);
+        finalResponse.setJsonPayload(<@untainted> responseJson);
         log:printInfo(" >> Response : " + responseJson.toString());
         var result = caller -> respond(finalResponse);
         if (result is error){
@@ -217,7 +230,6 @@ service AsyncInvoker on asyncServiceEP {
         }
     }
 }
-
 ```
 
 ### Mock remote service: stock_quote_data_backend
@@ -227,7 +239,7 @@ You can use any third-party remote service for the remote backend service. For e
  - resource path `/APPL` with response `"APPL, Apple Inc., 165.22"` 
  - resource path `/MSFT` with response `"MSFT, Microsoft Corporation, 95.35"` 
 
-NOTE: You can find the complete implementation of the stock_quote_data_backend [here](stock_quote_data_backend/stock_backend.bal)
+NOTE: For the complete implementation of the `stock_quote_data_backend`, see  [stock_quote_data_backend/stock_backend.bal](https://github.com/ballerina-guides/asynchronous-invocation/tree/master/guide)
 
 
 ## Testing 
@@ -283,9 +295,9 @@ Output :
 
 
 In Ballerina, the unit test cases should be in the same module inside a folder named as 'tests'.  When writing the test functions the below convention should be followed.
-- Test functions should be annotated with `@test:Config`. See the below example.
+- Test functions should be annotated with `@test:Config{}`. See the below example.
 ```ballerina
-   @test:Config
+   @test:Config{}
    function testQuoteService() {
 ```
   
@@ -313,27 +325,25 @@ $ ballerina build stock_quote_summary_service
 $ ballerina build stock_quote_data_backend
 ```
 
-- Once the `stock_quote_summary_service.balx` and `build stock_quote_data_backend.balx` are created inside the target directory, issue the following command to execute them. 
+- Once the `stock_quote_summary_service.jar` and `build stock_quote_data_backend.jar` are created inside the `target/bin/` directory, issue the following command to execute them. 
 
 ```
-$ ballerina run target/stock_quote_summary_service.balx
+$ ballerina run target/bin/stock_quote_summary_service.jar
 ```
 
 ```
-$ ballerina run target/stock_quote_data_backend.balx
+$ ballerina run target/bin/stock_quote_data_backend.jar
 ```
 
 - Once the service is successfully executed, the following output is displayed. 
 ```
-$ ballerina run target/stock_quote_summary_service.balx
-Initiating service(s) in 'target/stock_quote_summary_service.balx'
-[ballerina/http] started HTTP/WS endpoint 0.0.0.0:9090
+$ ballerina run target/bin/stock_quote_summary_service.jar
+[ballerina/http] started HTTP/WS listener 0.0.0.0:9090
 ```
 
 ```
-$ ballerina run target/stock_quote_data_backend.balx
-Initiating service(s) in 'target/stock_quote_data_backend.balx'
-[ballerina/http] started HTTP/WS endpoint 0.0.0.0:9095
+$ ballerina run target/bin/stock_quote_data_backend.jar
+[ballerina/http] started HTTP/WS listener 0.0.0.0:9095
 
 ```
 
@@ -368,8 +378,8 @@ service AsyncInvoker on asyncServiceEP {
 
 - `@docker:Config` annotation is used to provide the basic Docker image configurations for the sample. `@docker:Expose {}` is used to expose the port.
 
-- Now you can build a Ballerina executable archive (.balx) of the service that we developed above, using the following command. It points to the service file that we developed above and it will create an executable binary out of that. 
-This will also create the corresponding Docker image using the Docker annotations that you have configured above. Navigate to `asynchronous-invocation/guide` and run the following command.
+- Now, you can build a Ballerina executable of the service that we developed above using the following command. It points to the service file that we developed above and it will create an executable binary out of that. 
+This will also create the corresponding Docker image using the Docker annotations that you have configured above. Navigate to the `asynchronous-invocation/guide/asynchronous-invocation` directory and run the following command.
 ```
    $ ballerina build stock_quote_summary_service
 ```
@@ -445,15 +455,15 @@ This will also create the corresponding Docker image and the Kubernetes artifact
    $ ballerina build stock_quote_summary_service
   
    Run following command to deploy kubernetes artifacts:  
-   kubectl apply -f ./target/stock_quote_summary_service/kubernetes
+   kubectl apply -f ./target/kubernetes/stock_quote_summary_service
 ```
 
 - You can verify that the Docker image that we specified in `@kubernetes:Deployment` is created, by using `$ docker images`.
-- Also the Kubernetes artifacts related our service, will be generated in `./target/stock_quote_summary_service/kubernetes`. 
+- Also the Kubernetes artifacts related our service, will be generated in `./target/kubernetes/stock_quote_summary_service`. 
 - Now you can create the Kubernetes deployment using:
 
 ```
-   $ kubectl apply -f ./target/stock_quote_summary_service/kubernetes 
+   $ kubectl apply -f ./target/kubernetes/stock_quote_summary_service
  
    deployment.extensions "ballerina-guides-asynchronous-invocation" created
    ingress.extensions "ballerina-guides-asynchronous-invocation" created
@@ -492,7 +502,7 @@ Access the service
 
 ## Observability 
 Ballerina is by default observable. Meaning you can easily observe your services, resources, etc.
-However, observability is disabled by default via configuration. Observability can be enabled by adding following configurations to `ballerina.conf` file and starting the ballerina service using it. A sample configuration file can be found in `asynchronous-invocation/guide/stock_quote_summary_service`.
+However, observability is disabled by default via configuration. Observability can be enabled by adding following configurations to `ballerina.conf` file and starting the ballerina service using it. A sample configuration file can be found in `asynchronous-invocation/guide/asynchronous-invocation/`.
 
 ```ballerina
 [b7a.observability]
@@ -509,9 +519,9 @@ enabled=true
 To start the ballerina service using the configuration file, run the following command
 
 ```
-   $ ballerina run --config stock_quote_summary_service/ballerina.conf stock_quote_summary_service/
+   $ ballerina run --config stock_quote_summary_service/ballerina.conf stock_quote_summary_service
 ```
-NOTE: The above configuration is the minimum configuration needed to enable tracing and metrics. With these configurations default values are load as the other configuration parameters of metrics and tracing.
+NOTE: The above configuration is the minimum configuration needed to enable tracing and metrics. With these configurations, default values are load as the other configuration parameters of metrics and tracing.
 
 ### Tracing 
 
@@ -527,13 +537,13 @@ Follow the following steps to use tracing with Ballerina.
    name="jaeger"
 
    [b7a.observability.tracing.jaeger]
-   reporter.hostname="localhost"
-   reporter.port=5775
-   sampler.param=1.0
-   sampler.type="const"
-   reporter.flush.interval.ms=2000
-   reporter.log.spans=true
-   reporter.max.buffer.spans=1000
+   "reporter.hostname"="localhost"
+   "reporter.port"=5775
+   "sampler.param"=1.0
+   "sampler.type"="const"
+   "reporter.flush.interval.ms"=2000
+   "reporter.log.spans"=true
+   "reporter.max.buffer.spans"=1000
 ```
 
 - Run Jaeger Docker image using the following command
@@ -544,7 +554,7 @@ Follow the following steps to use tracing with Ballerina.
 
 - Navigate to `asynchronous-invocation/guide` and run the asynchronous-invocation using the following command
 ```
-   $ ballerina run --config stock_quote_summary_service/ballerina.conf stock_quote_summary_service/
+   $ ballerina run --config src/stock_quote_summary_service/ballerina.conf stock_quote_summary_service/
 ```
 
 - Observe the tracing using Jaeger UI using following URL
@@ -559,25 +569,25 @@ Follow the below steps to set up Prometheus and view metrics for Ballerina restf
 - You can add the following configurations for metrics. Note that these configurations are optional if you already have the basic configuration in `ballerina.conf` as described under `Observability` section.
 
 ```ballerina
-   [b7a.observability.metrics]
-   enabled=true
-   reporter="prometheus"
+[b7a.observability.metrics]
+enabled=true
+reporter="prometheus"
 
-   [b7a.observability.metrics.prometheus]
-   port=9797
-   host="0.0.0.0"
+[b7a.observability.metrics.prometheus]
+port=9797
+host="0.0.0.0"
 ```
 
 - Create a file `prometheus.yml` inside `/tmp/` location. Add the below configurations to the `prometheus.yml` file.
 ```
-   global:
-     scrape_interval:     15s
-     evaluation_interval: 15s
+global:
+  scrape_interval:     15s
+  evaluation_interval: 15s
 
-   scrape_configs:
-     - job_name: prometheus
-       static_configs:
-         - targets: ['172.17.0.1:9797']
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ['172.17.0.1:9797']
 ```
 
    NOTE : Replace `172.17.0.1` if your local Docker IP differs from `172.17.0.1`
@@ -590,7 +600,7 @@ Follow the below steps to set up Prometheus and view metrics for Ballerina restf
 
 - Navigate to `asynchronous-invocation/guide` and run the asynchronous-invocation using the following command
 ```
-  $ ballerina run --config stock_quote_summary_service/ballerina.conf stock_quote_summary_service/
+  $ ballerina run --config src/stock_quote_summary_service/ballerina.conf stock_quote_summary_service/
 ```
 
 - You can access Prometheus at the following URL
@@ -612,8 +622,6 @@ Ballerina has a log module for logging to the console. You can import ballerina/
    $ nohup ballerina run stock_quote_summary_service/ &>> ballerina.log&
 ```
    NOTE: This will write the console log to the `ballerina.log` file in the `asynchronous-invocation/guide` directory
-
-- Start Elasticsearch using the following command
 
 - Start Elasticsearch using the following command
 ```

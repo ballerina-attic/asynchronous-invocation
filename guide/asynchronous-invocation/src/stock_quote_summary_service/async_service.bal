@@ -1,9 +1,6 @@
 import ballerina/http;
 import ballerina/log;
-import ballerina/runtime;
-import ballerina/io;
 
-# Attributes associated with the service endpoint is defined here.
 listener http:Listener asyncServiceEP = new(9090);
 
 # Service is to be exposed via HTTP/1.1.
@@ -34,22 +31,20 @@ service AsyncInvoker on asyncServiceEP {
         // Calling the backend to get the stock quote for GOOG asynchronously
         future<http:Response|error> f1 = start nasdaqServiceEP->get("/nasdaq/quote/GOOG");
 
-        log:printInfo(" >> Invocation completed for GOOG stock quote! Proceed without
-        blocking for a response.");
+        log:printInfo(" >> Invocation completed for GOOG stock quote! Proceed without " + 
+        "blocking for a response.");
 
         // Calling the backend to get the stock quote for APPL asynchronously
-        future<http:Response|error> f2 = start nasdaqServiceEP
-        -> get("/nasdaq/quote/APPL");
+        future<http:Response|error> f2 = start nasdaqServiceEP->get("/nasdaq/quote/APPL");
 
-        log:printInfo(" >> Invocation completed for APPL stock quote! Proceed without
-        blocking for a response.");
+        log:printInfo(" >> Invocation completed for APPL stock quote! Proceed without " +
+        "blocking for a response.");
 
         // Calling the backend to get the stock quote for MSFT asynchronously
-        future<http:Response|error> f3 = start nasdaqServiceEP
-        -> get("/nasdaq/quote/MSFT");
+        future<http:Response|error> f3 = start nasdaqServiceEP->get("/nasdaq/quote/MSFT");
 
-        log:printInfo(" >> Invocation completed for MSFT stock quote! Proceed without
-        blocking for a response.");
+        log:printInfo(" >> Invocation completed for MSFT stock quote! Proceed without " +
+        "blocking for a response.");
 
         // Initialize empty json to add results from backed call
         json responseJson = ();
@@ -65,11 +60,13 @@ service AsyncInvoker on asyncServiceEP {
                 log:printError("Failed to retrive the payload");
             }
             // Add the response from /GOOG endpoint to responseJson file
-            responseJson["GOOG"] = responseStr;
+            json goog = { GOOG: responseStr};
+            responseJson = checkpanic responseJson.mergeJson(goog);
         } else {
-            string errorMsg = <string>response1.detail().message;
+            string errorMsg = <string>response1.detail()["message"];
             log:printError(errorMsg);
-            responseJson["GOOG"] = errorMsg;
+            json goog = { GOOG: errorMsg};
+            responseJson = checkpanic responseJson.mergeJson(goog);
         }
 
         var response2 = wait f2;
@@ -81,11 +78,13 @@ service AsyncInvoker on asyncServiceEP {
                 log:printError("Failed to retrive the payload");
             }
             // Add the response from /APPL endpoint to responseJson file
-            responseJson["APPL"] = responseStr;
+            json appl = { APPL: responseStr};
+            responseJson = checkpanic responseJson.mergeJson(appl);
         } else {
-            string errorMsg = <string>response2.detail().message;
+            string errorMsg = <string>response2.detail()["message"];
             log:printError(errorMsg);
-            responseJson["APPL"] = errorMsg;
+            json appl = { APPL: errorMsg};
+            responseJson = checkpanic responseJson.mergeJson(appl);
         }
 
         var response3 = wait f3;
@@ -97,16 +96,19 @@ service AsyncInvoker on asyncServiceEP {
                 log:printError("Failed to retrive the payload");
             }
             // Add the response from /MSFT endpoint to responseJson file
-            responseJson["MSFT"] = responseStr;
+            json msft = { MSFT: responseStr};
+            responseJson = checkpanic responseJson.mergeJson(msft);
+            
 
         } else {
-            string errorMsg = <string>response3.detail().message;
+            string errorMsg = <string>response3.detail()["message"];
             log:printError(errorMsg);
-            responseJson["MSFT"] = errorMsg;
+            json msft = { MSFT: errorMsg};
+            responseJson = checkpanic responseJson.mergeJson(msft);
         }
 
         // Send the response back to the client
-        finalResponse.setJsonPayload(untaint responseJson);
+        finalResponse.setJsonPayload(<@untainted> responseJson);
         log:printInfo(" >> Response : " + responseJson.toString());
         var result = caller -> respond(finalResponse);
         if (result is error){
